@@ -5,7 +5,6 @@ from datetime import datetime
 st.set_page_config(page_title="Data Decay Analyzer", layout="wide")
 st.title("📊 Data Decay Score Analyzer")
 
-# File upload
 uploaded_file = st.file_uploader("Upload a CSV or Excel file", type=["csv", "xlsx"])
 
 # --- Metric functions ---
@@ -67,9 +66,7 @@ if uploaded_file is not None:
         col4.metric("Inconsistency %", f"{inc_perc}%")
         col5.metric("Decay Score", f"{decay_score}")
 
-        # Clean data
-        st.subheader("🧹 Cleaned Data Preparation")
-
+        # 🧹 Data Cleaning Steps
         cleaned_df = df.dropna().drop_duplicates()
 
         for col in cleaned_df.columns:
@@ -78,9 +75,7 @@ if uploaded_file is not None:
             elif cleaned_df[col].dtype == 'object' and cleaned_df[col].nunique() > 20:
                 cleaned_df.drop(col, axis=1, inplace=True)
 
-        st.success(f"✅ Cleaned file ready with {cleaned_df.shape[0]} rows and {cleaned_df.shape[1]} columns.")
-
-        # Download button
+        # 📥 Download Button
         st.subheader("📥 Download Cleaned File")
         st.download_button(
             label="Download Cleaned CSV",
