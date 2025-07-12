@@ -5,8 +5,10 @@ from datetime import datetime
 st.set_page_config(page_title="Data Decay Analyzer", layout="wide")
 st.title("📊 Data Decay Score Analyzer")
 
+# File upload
 uploaded_file = st.file_uploader("Upload a CSV or Excel file", type=["csv", "xlsx"])
 
+# --- Metric functions ---
 def calculate_null_percentage(df):
     return (df.isnull().sum().sum() / df.size) * 100
 
@@ -33,6 +35,8 @@ def calculate_inconsistency_percentage(df):
 def calculate_decay_score(null_perc, dup_perc, out_perc, inc_perc):
     return max(0, 100 - (0.25 * null_perc + 0.25 * dup_perc + 0.25 * out_perc + 0.25 * inc_perc))
 
+
+# --- Main logic ---
 if uploaded_file is not None:
     try:
         if uploaded_file.name.endswith(".csv"):
@@ -45,12 +49,14 @@ if uploaded_file is not None:
 
         st.success("✅ File uploaded successfully!")
 
+        # Calculate all metrics
         null_perc = round(calculate_null_percentage(df), 2)
         dup_perc = round(calculate_duplicate_percentage(df), 2)
         out_perc = round(calculate_outdated_percentage(df), 2)
         inc_perc = round(calculate_inconsistency_percentage(df), 2)
         decay_score = round(calculate_decay_score(null_perc, dup_perc, out_perc, inc_perc), 2)
 
+        # Display metrics
         st.subheader("📈 Data Quality Metrics")
         col1, col2, col3 = st.columns(3)
         col1.metric("Null %", f"{null_perc}%")
@@ -60,6 +66,28 @@ if uploaded_file is not None:
         col4, col5 = st.columns(2)
         col4.metric("Inconsistency %", f"{inc_perc}%")
         col5.metric("Decay Score", f"{decay_score}")
+
+        # Clean data
+        st.subheader("🧹 Cleaned Data Preparation")
+
+        cleaned_df = df.dropna().drop_duplicates()
+
+        for col in cleaned_df.columns:
+            if pd.api.types.is_datetime64_any_dtype(cleaned_df[col]):
+                cleaned_df = cleaned_df[cleaned_df[col].dt.year >= datetime.now().year - 2]
+            elif cleaned_df[col].dtype == 'object' and cleaned_df[col].nunique() > 20:
+                cleaned_df.drop(col, axis=1, inplace=True)
+
+        st.success(f"✅ Cleaned file ready with {cleaned_df.shape[0]} rows and {cleaned_df.shape[1]} columns.")
+
+        # Download button
+        st.subheader("📥 Download Cleaned File")
+        st.download_button(
+            label="Download Cleaned CSV",
+            data=cleaned_df.to_csv(index=False).encode('utf-8'),
+            file_name="cleaned_data.csv",
+            mime="text/csv"
+        )
 
     except Exception as e:
         st.error(f"❌ Error processing file: {e}")
