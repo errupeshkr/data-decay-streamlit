@@ -95,54 +95,55 @@ st.markdown("<p style='text-align: center;'>Data Quality Insights -Joget DX 8 | 
 
 
 
+
+
 import streamlit as st
 
-# Set page config
+# Set page configuration
 st.set_page_config(
     page_title="Unused Data Clean AI",
+    page_icon="🧠",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed"  # Hides sidebar on load
 )
 
-# ---------------------------------
-# 🎉 Welcome Section (Main Page)
-# ---------------------------------
-st.markdown("<h1 style='text-align: center; color: green;'>🧠 Welcome to Unused Data Clean AI</h1>", unsafe_allow_html=True)
-st.markdown("<h4 style='text-align: center;'>Analyze, Clean and Download Your Data Easily</h4>", unsafe_allow_html=True)
-
-st.divider()
-
-# Upload File Section
-st.subheader("📤 Upload Your CSV/Excel File")
-uploaded_file = st.file_uploader("Choose a file", type=['csv', 'xlsx'])
-
-if uploaded_file:
-    st.success("✅ File uploaded successfully!")
-    st.write("File name:", uploaded_file.name)
-
-# ---------------------------------
-# 📌 Sidebar Navigation Menu
-# ---------------------------------
-st.sidebar.markdown("## 📂 All Menu Details")
-
-st.sidebar.markdown("🔎 **Analyze Data Quality**")
-st.sidebar.markdown("📊 **Dashboard**")
-st.sidebar.markdown("🗂️ **File History** &nbsp; <span style='color: white; background-color: blue; border-radius: 10px; padding: 2px 6px;'>40</span>", unsafe_allow_html=True)
-st.sidebar.markdown("👁️ **View Decay Scores** &nbsp; <span style='color: white; background-color: red; border-radius: 10px; padding: 2px 6px;'>40</span>", unsafe_allow_html=True)
-st.sidebar.markdown("🧹 **Cleanup Panel**")
-st.sidebar.markdown("📄 **Reports**")
-st.sidebar.markdown("🧽 **Cleanup Panel**")
-st.sidebar.markdown("📥 **Report Download**")
-
-# ---------------------------------
-# 💡 Footer or Next Steps
-# ---------------------------------
-st.divider()
-st.markdown("### 📌 What's Next?")
+# --- HEADER ---
 st.markdown("""
-- ✅ Get auto metrics like **Null %**, **Duplicate %**, **Outdated %**, **Inconsistency %**, and **Decay Score**
-- 📉 Visualize results on Dashboard
-- 🧹 Clean the data using Cleanup Panel
-- 📥 Download the final cleaned report
-""")
+    <h1 style='text-align: center; color: #4CAF50;'>🧠 Unused Data Clean AI</h1>
+    <h3 style='text-align: center;'>A Smart Platform to Analyze and Clean Your Unused Data</h3>
+    <hr>
+""", unsafe_allow_html=True)
+
+# --- BUTTON TO OPEN APP ---
+st.markdown("""
+    <div style='text-align: center; margin-top: 30px;'>
+        <a href='https://huggingface.co/spaces/rupeshchy22102000/data-decay-analyzer' target='_blank'>
+            <button style='background-color: #4CAF50; color: white; padding: 14px 28px;
+                            border: none; border-radius: 10px; font-size: 18px; cursor: pointer;'>
+                🚀 Open Decay Analyzer App
+            </button>
+        </a>
+    </div>
+""", unsafe_allow_html=True)
+
+# --- MENU (SIMULATED) ---
+st.markdown("""
+    <br><br>
+    <h4>📂 All Menu Details</h4>
+    <ul style='font-size: 18px; line-height: 1.8;'>
+        <li>📊 Analyze Data Quality</li>
+        <li>📈 Dashboard</li>
+        <li>🗂️ File History</li>
+        <li>👁️ View Decay Scores</li>
+        <li>🧹 Cleanup Panel</li>
+        <li>📋 Reports</li>
+        <li>📥 Report Download</li>
+    </ul>
+""", unsafe_allow_html=True)
+
+# --- FOOTER ---
+st.markdown("""
+    <hr>
+    <p style='text-align: center; color: gray;'>© 2025 Unused Data Clean AI by Rupesh Kumar</p>
+""", unsafe_allow_html=True)
 
