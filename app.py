@@ -1,22 +1,46 @@
 import streamlit as st
 import pandas as pd
-from io import StringIO
 
-# --- Page Configuration ---
+# --- Set page config ---
 st.set_page_config(
     page_title="Unused Data Clean AI",
-    layout="centered",
-    page_icon="📊"
+    layout="wide",
+    page_icon="🧠"
 )
 
-# --- Welcome Header ---
-st.markdown("<h1 style='text-align: center;'>📊 Unused Data Clean AI</h1>", unsafe_allow_html=True)
-st.markdown("#### 📤 Upload your CSV or Excel file")
+# --- Custom Banner Header ---
+st.markdown("""
+    <div style='background-color: #1E3A8A; padding: 20px; border-radius: 10px;'>
+        <h1 style='text-align: center; color: white;'>🧠 Unused Data Clean AI</h1>
+        <h4 style='text-align: center; color: #D1D5DB;'>Analyze, Score, and Clean Your Data with AI</h4>
+    </div>
+""", unsafe_allow_html=True)
 
-# --- File Upload ---
-uploaded_file = st.file_uploader("Choose a file", type=['csv', 'xlsx'])
+# --- Icon Row with Labels ---
+st.markdown("""
+<div style="text-align:center; margin-top: 30px; margin-bottom: 10px;">
+    <span style="margin: 40px;">
+        📁<br><strong>Upload File</strong>
+    </span>
+    <span style="margin: 40px;">
+        📊<br><strong>Profile Metrics</strong>
+    </span>
+    <span style="margin: 40px;">
+        🧠<br><strong>AI Decay Score</strong>
+    </span>
+    <span style="margin: 40px;">
+        🪄<br><strong><a href='#' style='text-decoration:none;'>Cleanup Suggestion</a></strong>
+    </span>
+</div>
+""", unsafe_allow_html=True)
 
-# --- Process and Display ---
+# --- Horizontal Line ---
+st.markdown("---")
+
+# --- Upload Section ---
+st.markdown("### 📤 Upload your dataset and get instant insights.")
+uploaded_file = st.file_uploader("Upload CSV or Excel File (.csv / .xlsx)", type=["csv", "xlsx"])
+
 if uploaded_file:
     try:
         if uploaded_file.name.endswith('.csv'):
@@ -26,40 +50,44 @@ if uploaded_file:
 
         st.success("✅ File uploaded successfully!")
 
-        # --- Calculate Data Quality Metrics ---
+        # --- Calculate Metrics ---
         total_cells = df.size
         total_rows = len(df)
         null_percentage = df.isnull().sum().sum() * 100 / total_cells
         duplicate_percentage = df.duplicated().sum() * 100 / total_rows
-        outdated_percentage = 10.0  # Dummy
-        inconsistency_percentage = 15.0  # Dummy
+        outdated_percentage = 12.0  # placeholder
+        inconsistency_percentage = 15.0  # placeholder
         decay_score = 100.0 - (null_percentage + duplicate_percentage + outdated_percentage + inconsistency_percentage)/4
 
-        # --- Display Metrics ---
-        st.markdown("### 📊 Data Quality Metrics")
+        # --- Show Metrics in Two Columns ---
         col1, col2 = st.columns(2)
-        col1.metric("🕳️ Null %", f"{null_percentage:.2f} %")
-        col2.metric("🔁 Duplicate %", f"{duplicate_percentage:.2f} %")
-        col1.metric("📆 Outdated %", f"{outdated_percentage:.2f} %")
-        col2.metric("🧩 Inconsistency %", f"{inconsistency_percentage:.2f} %")
-        st.metric("🔥 Decay Score", f"{decay_score:.2f} %")
 
-        # --- Download Cleaned Data (Dummy for now) ---
-        cleaned_csv = df.drop_duplicates().dropna()
-        csv = cleaned_csv.to_csv(index=False).encode('utf-8')
+        with col1:
+            st.text_input("🕳️ Null %", f"{null_percentage:.2f} %", disabled=True)
+            st.text_input("📆 Outdated %", f"{outdated_percentage:.2f} %", disabled=True)
+
+        with col2:
+            st.text_input("🔁 Duplicate %", f"{duplicate_percentage:.2f} %", disabled=True)
+            st.text_input("🧩 Inconsistency %", f"{inconsistency_percentage:.2f} %", disabled=True)
+
+        st.text_input("🔥 Decay Score", f"{decay_score:.2f} %", disabled=True)
+
+        # --- Cleaned CSV Download ---
+        cleaned_df = df.drop_duplicates().dropna()
+        csv = cleaned_df.to_csv(index=False).encode("utf-8")
         st.download_button(
-            label="📥 Download Cleaned CSV",
+            "📥 Download Cleaned CSV",
             data=csv,
-            file_name='cleaned_data.csv',
-            mime='text/csv'
+            file_name="cleaned_data.csv",
+            mime="text/csv"
         )
 
     except Exception as e:
         st.error(f"❌ Error processing file: {e}")
 
 else:
-    st.info("Please upload a file to get started.")
+    st.info("Upload a .csv or .xlsx file to begin.")
 
 # --- Footer ---
 st.markdown("---")
-st.markdown("<p style='text-align: center;'>Made with ❤️ for Data Quality Insights</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center;'>Data Quality Insights -Joget DX 8 | Team: Unused Data Clean AI</p>", unsafe_allow_html=True)
