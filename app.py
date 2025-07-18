@@ -91,3 +91,58 @@ else:
 # --- Footer ---
 st.markdown("---")
 st.markdown("<p style='text-align: center;'>Data Quality Insights -Joget DX 8 | Team: Unused Data Clean AI</p>", unsafe_allow_html=True)
+
+
+
+
+import streamlit as st
+
+# Set page config
+st.set_page_config(
+    page_title="Unused Data Clean AI",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
+# ---------------------------------
+# 🎉 Welcome Section (Main Page)
+# ---------------------------------
+st.markdown("<h1 style='text-align: center; color: green;'>🧠 Welcome to Unused Data Clean AI</h1>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center;'>Analyze, Clean and Download Your Data Easily</h4>", unsafe_allow_html=True)
+
+st.divider()
+
+# Upload File Section
+st.subheader("📤 Upload Your CSV/Excel File")
+uploaded_file = st.file_uploader("Choose a file", type=['csv', 'xlsx'])
+
+if uploaded_file:
+    st.success("✅ File uploaded successfully!")
+    st.write("File name:", uploaded_file.name)
+
+# ---------------------------------
+# 📌 Sidebar Navigation Menu
+# ---------------------------------
+st.sidebar.markdown("## 📂 All Menu Details")
+
+st.sidebar.markdown("🔎 **Analyze Data Quality**")
+st.sidebar.markdown("📊 **Dashboard**")
+st.sidebar.markdown("🗂️ **File History** &nbsp; <span style='color: white; background-color: blue; border-radius: 10px; padding: 2px 6px;'>40</span>", unsafe_allow_html=True)
+st.sidebar.markdown("👁️ **View Decay Scores** &nbsp; <span style='color: white; background-color: red; border-radius: 10px; padding: 2px 6px;'>40</span>", unsafe_allow_html=True)
+st.sidebar.markdown("🧹 **Cleanup Panel**")
+st.sidebar.markdown("📄 **Reports**")
+st.sidebar.markdown("🧽 **Cleanup Panel**")
+st.sidebar.markdown("📥 **Report Download**")
+
+# ---------------------------------
+# 💡 Footer or Next Steps
+# ---------------------------------
+st.divider()
+st.markdown("### 📌 What's Next?")
+st.markdown("""
+- ✅ Get auto metrics like **Null %**, **Duplicate %**, **Outdated %**, **Inconsistency %**, and **Decay Score**
+- 📉 Visualize results on Dashboard
+- 🧹 Clean the data using Cleanup Panel
+- 📥 Download the final cleaned report
+""")
+
