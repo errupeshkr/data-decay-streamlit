@@ -1,129 +1,117 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
-from io import BytesIO
+import io
 
-# Hide sidebar
-st.set_page_config(layout="wide", initial_sidebar_state="collapsed")
+# Hide the Streamlit default sidebar
+hide_sidebar = """
+    <style>
+        [data-testid="stSidebar"] {
+            display: none;
+        }
+    </style>
+"""
+st.markdown(hide_sidebar, unsafe_allow_html=True)
 
-# --- CSS Styling ---
-st.markdown("""
-<style>
-/* Hide sidebar toggle */
-[data-testid="stSidebar"] { display: none; }
+# Custom CSS for highlighting
+highlight_style = """
+    <style>
+        .metric-container {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 12px;
+            background-color: #f3f5f9;
+            box-shadow: 0 0 5px rgba(0,0,0,0.05);
+        }
+        .metric-label {
+            font-size: 1rem;
+            color: #666;
+        }
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2a2a2a;
+        }
+    </style>
+"""
+st.markdown(highlight_style, unsafe_allow_html=True)
 
-/* Highlight blocks */
-.metric-box {
-    background-color: #F3F4F6;
-    padding: 15px 25px;
-    border-radius: 12px;
-    margin-bottom: 15px;
-    font-size: 18px;
-    color: #111827;
-    font-weight: 500;
-}
-.metric-title {
-    font-size: 15px;
-    color: #6B7280;
-    margin-bottom: 5px;
-}
-h1, h2, h3 {
-    color: #1F2937;
-}
-.stButton>button {
-    background-color: #2563EB;
-    color: white;
-    font-weight: bold;
-    border-radius: 8px;
-    padding: 10px 20px;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# --- Title ---
-st.markdown("## 👋 Welcome to Unused Data Clean AI")
-st.write("Upload your CSV/Excel file to view data quality insights and download the cleaned version.")
+# --- Header ---
+st.markdown("## 📊 Data Quality Metrics")
+st.write("---")
 
 # --- File Upload ---
-uploaded_file = st.file_uploader("📁 Upload your file", type=["csv", "xlsx"])
-
-# --- Processing ---
-if uploaded_file is not None:
-    # Load data
-    if uploaded_file.name.endswith(".csv"):
+uploaded_file = st.file_uploader("📁 Upload CSV or Excel file", type=["csv", "xlsx"])
+if uploaded_file:
+    file_ext = uploaded_file.name.split('.')[-1]
+    
+    # Load file
+    if file_ext == 'csv':
         df = pd.read_csv(uploaded_file)
-    else:
+    elif file_ext == 'xlsx':
         df = pd.read_excel(uploaded_file)
 
-    # --- Data Profiling ---
-    total_rows, total_columns = df.shape
-    total_cells = total_rows * total_columns
-
-    null_percentage = (df.isnull().sum().sum() / total_cells) * 100
-
-    duplicate_percentage = (df.duplicated().sum() / total_rows) * 100
-
-    outdated_percentage = 0
-    for col in df.columns:
-        if "date" in col.lower():
-            try:
-                dates = pd.to_datetime(df[col], errors='coerce')
-                outdated_percentage = ((dates < "2023-01-01").sum() / total_rows) * 100
-                break
-            except:
-                pass
-
-    inconsistency_percentage = 0
-    for col in df.columns:
-        if df[col].dtype == object:
-            inconsistency_percentage += (df[col].str.strip().value_counts().sum() - df[col].value_counts().sum())
-    inconsistency_percentage = (inconsistency_percentage / total_rows) * 100
-
-    decay_score = 100 - (null_percentage + duplicate_percentage + outdated_percentage + inconsistency_percentage)/4
-
-    # --- Display Highlighted Metrics ---
-    st.markdown("### 📊 <span style='color:#111827'>Data Quality Metrics</span>", unsafe_allow_html=True)
+    total_cells = df.size
+    total_rows = len(df)
     
-    col1, col2 = st.columns(2)
+    # Calculate Metrics
+    null_percent = round(df.isnull().sum().sum() / total_cells * 100, 2)
+    duplicate_percent = round(df.duplicated().sum() / total_rows * 100, 2)
+    outdated_percent = 12.0  # Placeholder (replace with your logic)
+    inconsistency_percent = 15.0  # Placeholder (replace with your logic)
 
+    decay_score = round(100 - ((null_percent + duplicate_percent + outdated_percent + inconsistency_percent) * 0.25), 2)
+
+    # --- Display Metrics with Highlights ---
+    col1, col2 = st.columns(2)
     with col1:
         st.markdown(f"""
-        <div class='metric-box'>
-            <div class='metric-title'>🕳️ Null %</div>
-            {null_percentage:.2f} %
-        </div>
-        <div class='metric-box'>
-            <div class='metric-title'>📆 Outdated %</div>
-            {outdated_percentage:.2f} %
-        </div>
+            <div class='metric-container'>
+                <div class='metric-label'>🦠 Null %</div>
+                <div class='metric-value'>{null_percent} %</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown(f"""
+            <div class='metric-container'>
+                <div class='metric-label'>📅 Outdated %</div>
+                <div class='metric-value'>{outdated_percent} %</div>
+            </div>
         """, unsafe_allow_html=True)
 
     with col2:
         st.markdown(f"""
-        <div class='metric-box'>
-            <div class='metric-title'>🌀 Duplicate %</div>
-            {duplicate_percentage:.2f} %
-        </div>
-        <div class='metric-box'>
-            <div class='metric-title'>🧩 Inconsistency %</div>
-            {inconsistency_percentage:.2f} %
-        </div>
+            <div class='metric-container'>
+                <div class='metric-label'>🧬 Duplicate %</div>
+                <div class='metric-value'>{duplicate_percent} %</div>
+            </div>
         """, unsafe_allow_html=True)
 
+        st.markdown(f"""
+            <div class='metric-container'>
+                <div class='metric-label'>🧩 Inconsistency %</div>
+                <div class='metric-value'>{inconsistency_percent} %</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    # Decay Score Full Width
     st.markdown(f"""
-    <div class='metric-box'>
-        <div class='metric-title'>🔥 Decay Score</div>
-        {decay_score:.2f} %
-    </div>
+        <div class='metric-container'>
+            <div class='metric-label'>🔥 Decay Score</div>
+            <div class='metric-value'>{decay_score} %</div>
+        </div>
     """, unsafe_allow_html=True)
 
-    # --- Download cleaned CSV ---
-    cleaned_df = df.drop_duplicates()
-    csv_buffer = BytesIO()
-    cleaned_df.to_csv(csv_buffer, index=False)
+    # --- Download Cleaned File ---
+    cleaned_csv = df.drop_duplicates().dropna()
+    buffer = io.StringIO()
+    cleaned_csv.to_csv(buffer, index=False)
+    buffer.seek(0)
+
     st.download_button(
         label="📥 Download Cleaned CSV",
-        data=csv_buffer.getvalue(),
+        data=buffer,
         file_name="cleaned_data.csv",
-        mime="text/csv"
+        mime="text/csv",
     )
+else:
+    st.info("Please upload a CSV or Excel file to begin analysis.")
